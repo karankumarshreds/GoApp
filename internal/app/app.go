@@ -21,6 +21,8 @@ func Start() {
 
 	// routes
 	router.HandleFunc("/customers", h.GetAllCustomers)
+	router.HandleFunc("/customers/{id}", h.GetSingleCustomer)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
+
 }

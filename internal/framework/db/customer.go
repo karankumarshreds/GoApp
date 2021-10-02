@@ -4,16 +4,9 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
+	"github.com/karankumarshreds/GoApp/internal/core"
+	"strconv"
 )
-
-type Customer struct {
-	Id string
-	Name string
-	City string
-	ZipCode string
-	DateOfBirth string
-	Status bool
-}
 
 type CustomerRepositoryDb struct {
 	db *sql.DB
@@ -28,7 +21,7 @@ func NewCustomerRepository (connString string) *CustomerRepositoryDb{
 	return &CustomerRepositoryDb{db}
 }
 
-func (d CustomerRepositoryDb) FindAll() ([]Customer, error){
+func (d CustomerRepositoryDb) FindAll() ([]core.Customer, error){
 	rows, err := d.db.Query(
 		"SELECT customer_id, city, name, date_of_birth, zipcode, status FROM customers;",
 	)
@@ -36,10 +29,10 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error){
 		log.Printf("Error while fetching customers %v", err)
 		return nil, err
 	}
-	customers := []Customer{}
+	customers := []core.Customer{}
 
 	for rows.Next() {
-		var c Customer
+		var c core.Customer
 		err := rows.Scan(&c.Id, &c.City, &c.Name, &c.DateOfBirth, &c.ZipCode, &c.Status)
 		if err != nil {
 			return nil, err
@@ -48,3 +41,43 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error){
 	}
 	return customers, nil
 }
+
+func (d CustomerRepositoryDb) FindById(id string) (*core.Customer, error) {
+	customerId, _ := strconv.Atoi(id)
+	row:= d.db.QueryRow(
+		"" +
+			"SELECT customer_id, city, name, date_of_birth, zipcode, status FROM customers WHERE customer_id=$1",
+			customerId,
+	)
+	c := core.Customer{}
+	err := row.Scan(&c.Id, &c.City, &c.Name, &c.DateOfBirth, &c.ZipCode, &c.Status)
+	if err != nil {
+		log.Printf("ERROR: Unable to scan customer %v", err)
+		return nil, err
+	}
+	return &c, nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

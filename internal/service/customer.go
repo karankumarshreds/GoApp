@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/karankumarshreds/GoApp/internal/core"
 	"github.com/karankumarshreds/GoApp/internal/ports/repository"
-	"github.com/karankumarshreds/GoApp/internal/framework/db"
 )
 
 type CustomerService struct {
@@ -15,6 +15,10 @@ func NewCustomerService( repo ports.CustomerRepositoryPort ) CustomerService {
 	return CustomerService{repo}
 }
 
-func (cs CustomerService) GetAllCustomers() ([]db.Customer, error){
+func (cs CustomerService) GetAllCustomers() ([]core.Customer, error){
 	return cs.repo.FindAll()
+}
+
+func (cs CustomerService) GetCustomer(id string) (*core.Customer, error) {
+	return cs.repo.FindById(id)
 }

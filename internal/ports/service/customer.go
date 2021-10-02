@@ -1,8 +1,9 @@
 package ports
 
-import "github.com/karankumarshreds/GoApp/internal/framework/db"
+import "github.com/karankumarshreds/GoApp/internal/core"
 
 type CustomerPort interface {
-	GetAllCustomers() ([]db.Customer, error)
+	GetAllCustomers() ([]core.Customer, error)
+	GetCustomer(id string) (*core.Customer, error)
 }
 
