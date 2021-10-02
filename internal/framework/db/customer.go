@@ -24,12 +24,13 @@ func NewCustomerRepository (connString string) *CustomerRepositoryDb{
 	if err != nil {
 		log.Fatalf("Error while connecting to the database %v\n", err)
 	}
+	log.Println("Successfully connected to DB...")
 	return &CustomerRepositoryDb{db}
 }
 
 func (d CustomerRepositoryDb) FindAll() ([]Customer, error){
 	rows, err := d.db.Query(
-		"SELECT id, city, name, date_of_birth, zipcode, status FROM customers;",
+		"SELECT customer_id, city, name, date_of_birth, zipcode, status FROM customers;",
 	)
 	if err != nil {
 		log.Printf("Error while fetching customers %v", err)
