@@ -1,5 +1,11 @@
 package db
 
+import (
+	"database/sql"
+	_ "github.com/lib/pq"
+	"log"
+)
+
 type Customer struct {
 	Id string
 	Name string
@@ -9,18 +15,35 @@ type Customer struct {
 	Status bool
 }
 
-type CustomerRepositoryStub struct {
-	customers []Customer
+type CustomerRepositoryDb struct {
+	db *sql.DB
 }
 
-func (c CustomerRepositoryStub) FindAll() ([]Customer, error) {
-	return c.customers, nil
-}
-
-func NewCustomerRepositoryStub() CustomerRepositoryStub {
-	customers := []Customer{
-		{ Id: "123", Name: "Karan", City: "Delhi", ZipCode: "00000", DateOfBirth: "09/09/09", Status: true},
-		{ Id: "124", Name: "Rahul", City: "Delhi", ZipCode: "00001", DateOfBirth: "08/08/08", Status: true},
+func NewCustomerRepository (connString string) *CustomerRepositoryDb{
+	db, err := sql.Open("postgres", connString)
+	if err != nil {
+		log.Fatalf("Error while connecting to the database %v\n", err)
 	}
-	return CustomerRepositoryStub{customers}
+	return &CustomerRepositoryDb{db}
+}
+
+func (d CustomerRepositoryDb) FindAll() ([]Customer, error){
+	rows, err := d.db.Query(
+		"SELECT id, city, name, date_of_birth, zipcode, status FROM customers;",
+	)
+	if err != nil {
+		log.Printf("Error while fetching customers %v", err)
+		return nil, err
+	}
+	customers := []Customer{}
+
+	for rows.Next() {
+		var c Customer
+		err := rows.Scan(&c.Id, &c.City, &c.Name, &c.DateOfBirth, &c.ZipCode, &c.Status)
+		if err != nil {
+			return nil, err
+		}
+		customers = append(customers, c)
+	}
+	return customers, nil
 }
