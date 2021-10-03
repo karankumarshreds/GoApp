@@ -32,12 +32,11 @@ func (ch *CustomerHandlers) GetSingleCustomer(w http.ResponseWriter, r*http.Requ
 		log.Println("Invalid customer ID")
 	}
  	customer, err := ch.service.GetCustomer(customerId)
-	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		log.Println("ERROR: Unable to get single customer", err)
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(err.Error())
+		err.ErrorJsonResponse(w, err.Message)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(customer)
 }

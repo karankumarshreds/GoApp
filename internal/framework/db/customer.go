@@ -43,7 +43,7 @@ func (d CustomerRepositoryDb) FindAll() ([]core.Customer, error){
 	return customers, nil
 }
 
-func (d CustomerRepositoryDb) FindById(id string) (*core.Customer, error) {
+func (d CustomerRepositoryDb) FindById(id string) (*core.Customer, *custom_errors.CustomError) {
 	customerId, _ := strconv.Atoi(id)
 	row:= d.db.QueryRow(
 		"" +
@@ -55,10 +55,10 @@ func (d CustomerRepositoryDb) FindById(id string) (*core.Customer, error) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("ERROR: No customer found")
-			return nil, custom_errors.NewNotFoundError("customer not found...")
+			return nil, custom_errors.NewNotFoundError("customer not found")
 		} else {
 			log.Printf("ERROR: Unable to scan customer %v", err)
-			return nil, custom_errors.NewInternalServerError()
+			return nil, custom_errors.NewInternalServerError("unable to query users")
 		}
 	}
 	return &c, nil
