@@ -2,9 +2,10 @@ package db
 
 import (
 	"database/sql"
+	"github.com/karankumarshreds/GoApp/internal/core"
+	"github.com/karankumarshreds/GoApp/internal/pkg/custom_errors"
 	_ "github.com/lib/pq"
 	"log"
-	"github.com/karankumarshreds/GoApp/internal/core"
 	"strconv"
 )
 
@@ -52,8 +53,13 @@ func (d CustomerRepositoryDb) FindById(id string) (*core.Customer, error) {
 	c := core.Customer{}
 	err := row.Scan(&c.Id, &c.City, &c.Name, &c.DateOfBirth, &c.ZipCode, &c.Status)
 	if err != nil {
-		log.Printf("ERROR: Unable to scan customer %v", err)
-		return nil, err
+		if err == sql.ErrNoRows {
+			log.Printf("ERROR: No customer found")
+			return nil, custom_errors.NewNotFoundError("customer not found...")
+		} else {
+			log.Printf("ERROR: Unable to scan customer %v", err)
+			return nil, custom_errors.NewInternalServerError()
+		}
 	}
 	return &c, nil
 }
