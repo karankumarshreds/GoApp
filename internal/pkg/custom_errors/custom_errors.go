@@ -18,11 +18,15 @@ func NewInternalServerError(message string) *CustomError {
 	return &CustomError{Code: http.StatusInternalServerError, Message: message}
 }
 
-func (ce CustomError) ErrorJsonResponse (w http.ResponseWriter, message string) {
+func NewBadRequestError(message string) *CustomError {
+	return &CustomError{Code: http.StatusBadRequest, Message: message}
+}
+
+func (ce CustomError) ErrorJsonResponse (w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(ce.Code)
 	errorResponse := make(map[string]string)
-	errorResponse["error"] = message
+	errorResponse["error"] = ce.Message
 	json.NewEncoder(w).Encode(errorResponse)
 }
 

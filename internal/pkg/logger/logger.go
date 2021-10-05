@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -28,8 +29,8 @@ func InfoLog(message string) {
 	logger.Info(message)
 }
 
-func ErrorLog(message string) {
-	logger.Error(message)
+func ErrorLog(message string, err error) {
+	logger.Error(fmt.Sprintf("message %v %v",message, err))
 }
 
 func DebugLog(message string) {
