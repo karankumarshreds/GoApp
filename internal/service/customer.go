@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/karankumarshreds/GoApp/internal/core"
+	"github.com/karankumarshreds/GoApp/internal/dto"
 	"github.com/karankumarshreds/GoApp/internal/pkg/custom_errors"
 	"github.com/karankumarshreds/GoApp/internal/ports/repository"
 )
@@ -20,6 +21,18 @@ func (cs CustomerService) GetAllCustomers() ([]core.Customer, error){
 	return cs.repo.FindAll()
 }
 
-func (cs CustomerService) GetCustomer(id string) (*core.Customer, *custom_errors.CustomError) {
-	return cs.repo.FindById(id)
+func (cs CustomerService) GetCustomer(id string) (*dto.CustomerResponse, *custom_errors.CustomError) {
+	c, err := cs.repo.FindById(id)
+	if err != nil {
+		return nil, err
+	}
+	response := dto.CustomerResponse{
+		Id:          c.Id,
+		Name:        c.Name,
+		City:        c.City,
+		ZipCode:     c.ZipCode,
+		DateOfBirth: c.DateOfBirth,
+		Status:      false,
+	}
+	return &response, nil
 }
