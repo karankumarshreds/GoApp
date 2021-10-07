@@ -20,23 +20,15 @@ func NewAccountRepository(dbClient *sqlx.DB) *AccountRepositoryDb {
 func (d AccountRepositoryDb) Save(a core.Account) (*core.Account, *custom_errors.CustomError) {
 	q := `
 		INSERT INTO accounts(customer_id, opening_date, account_type, amount, status)
-		VALUES  ($1, $2, $3, $4, $5) RETURNING *;
+		VALUES  ($1, $2, $3, $4, $5) RETURNING account_id;
 	`
-	res, err := d.db.Exec(q, a.CustomerId, a.OpeningDate, a.AccountType, a.Amount, a.Status)
+	id := 0
+	err := d.db.QueryRow(q,a.CustomerId, a.OpeningDate, a.AccountType, a.Amount, a.Status).Scan(&id)
 	if err != nil {
 		logger.ErrorLog("Unable to create account", err)
 		return nil, custom_errors.NewInternalServerError("Unable to create account at the moment")
 	}
-
-
-	id, err := res.LastInsertId()
-
-	if err != nil {
-		logger.ErrorLog("Unable to get last id after save", err)
-		return nil, custom_errors.NewInternalServerError("Unable to get last id after save")
-	}
-	fmt.Println("This is the id =====", id)
-	a.AccountId = fmt.Sprintf("%v", 90)
+	a.AccountId = fmt.Sprintf("%v", id)
 	return &a, nil
 }
 
