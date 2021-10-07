@@ -4,23 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 	"github.com/karankumarshreds/GoApp/internal/framework/db"
 	"github.com/karankumarshreds/GoApp/internal/framework/http/handlers"
 	"github.com/karankumarshreds/GoApp/internal/service"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
+	"time"
 )
 
 func Start() {
-	router := mux.NewRouter()
 
-	// wiring
-	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", "postgres", "password", "banking")
-	client, err := sql.Open("postgres", connString)
-	if err != nil {
-		log.Fatalf("Error while connecting to the database %v\n", err)
-	}
-	log.Println("Successfully connected to DB...")
+	router := mux.NewRouter()
+	client := dbClient()
 
 	// wiring
 	customerRepo := db.NewCustomerRepository(client)
@@ -39,4 +36,17 @@ func Start() {
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 
+}
+
+func dbClient() *sqlx.DB {
+	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", "postgres", "password", "banking")
+	client, err := sqlx.Open("postgres", connString)
+	if err != nil {
+		panic(err)
+	}
+	// See "Important settings" section.
+	client.SetConnMaxLifetime(time.Minute * 3)
+	client.SetMaxOpenConns(10)
+	client.SetMaxIdleConns(10)
+	return client
 }

@@ -12,10 +12,10 @@ import (
 )
 
 type CustomerRepositoryDb struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewCustomerRepository (dbClient *sql.DB) *CustomerRepositoryDb{
+func NewCustomerRepository (dbClient *sqlx.DB) *CustomerRepositoryDb{
 	return &CustomerRepositoryDb{dbClient}
 }
 

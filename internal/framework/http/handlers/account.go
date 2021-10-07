@@ -17,6 +17,7 @@ func NewAccountHandlers(service ports.AccountServicePort) AccountHandlers {
 }
 
 func (ah *AccountHandlers) CreateAccount(w http.ResponseWriter, r *http.Request) {
+	//var a dto.AccountCreateDto
 	var a dto.AccountCreateDto
 	var err error
 	err = json.NewDecoder(r.Body).Decode(&a)

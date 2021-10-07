@@ -15,6 +15,7 @@ func init() {
 	config := zap.NewProductionConfig()
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderConfig.StacktraceKey = "" // omitting stack trace from logs
 	config.EncoderConfig = encoderConfig
 
 	logger, err = config.Build(zap.AddCallerSkip(1)) // applying the custom configs
