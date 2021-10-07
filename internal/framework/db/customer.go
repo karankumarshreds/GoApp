@@ -15,13 +15,8 @@ type CustomerRepositoryDb struct {
 	db *sql.DB
 }
 
-func NewCustomerRepository (connString string) *CustomerRepositoryDb{
-	db, err := sql.Open("postgres", connString)
-	if err != nil {
-		log.Fatalf("Error while connecting to the database %v\n", err)
-	}
-	log.Println("Successfully connected to DB...")
-	return &CustomerRepositoryDb{db}
+func NewCustomerRepository (dbClient *sql.DB) *CustomerRepositoryDb{
+	return &CustomerRepositoryDb{dbClient}
 }
 
 func (d CustomerRepositoryDb) FindAll() ([]core.Customer, error){

@@ -21,12 +21,12 @@ func (cs CustomerService) GetAllCustomers() ([]core.Customer, error){
 	return cs.repo.FindAll()
 }
 
-func (cs CustomerService) GetCustomer(id string) (*dto.CustomerResponse, *custom_errors.CustomError) {
+func (cs CustomerService) GetCustomer(id string) (*dto.CustomerResponseDto, *custom_errors.CustomError) {
 	c, err := cs.repo.FindById(id)
 	if err != nil {
 		return nil, err
 	}
-	response := dto.CustomerResponse{
+	response := dto.CustomerResponseDto{
 		Id:          c.Id,
 		Name:        c.Name,
 		City:        c.City,

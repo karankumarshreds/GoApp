@@ -6,8 +6,8 @@ import (
 	"github.com/karankumarshreds/GoApp/internal/pkg/custom_errors"
 )
 
-type CustomerPort interface {
+type CustomerServicePort interface {
 	GetAllCustomers() ([]core.Customer, error)
-	GetCustomer(id string) (*dto.CustomerResponse, *custom_errors.CustomError)
+	GetCustomer(id string) (*dto.CustomerResponseDto, *custom_errors.CustomError)
 }
 

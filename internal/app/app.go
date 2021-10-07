@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/karankumarshreds/GoApp/internal/framework/db"
@@ -15,13 +16,26 @@ func Start() {
 
 	// wiring
 	connString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", "postgres", "password", "banking")
-	repo := db.NewCustomerRepository(connString)
-	cs := service.NewCustomerService(repo)
-	h := handlers.NewCustomerHandlers(cs)
+	client, err := sql.Open("postgres", connString)
+	if err != nil {
+		log.Fatalf("Error while connecting to the database %v\n", err)
+	}
+	log.Println("Successfully connected to DB...")
+
+	// wiring
+	customerRepo := db.NewCustomerRepository(client)
+	accountRepo  := db.NewAccountRepository(client)
+
+	cs := service.NewCustomerService(customerRepo)
+	as := service.NewAccountService(accountRepo)
+
+	ch := handlers.NewCustomerHandlers(cs)
+	ah := handlers.NewAccountHandlers(as)
 
 	// routes
-	router.HandleFunc("/customers", h.GetAllCustomers)
-	router.HandleFunc("/customers/{id}", h.GetSingleCustomer)
+	router.HandleFunc("/customers", ch.GetAllCustomers).Methods("GET")
+	router.HandleFunc("/customers/{id}", ch.GetSingleCustomer).Methods("GET")
+	router.HandleFunc("/account", ah.CreateAccount).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 

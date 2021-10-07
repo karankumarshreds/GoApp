@@ -11,10 +11,10 @@ import (
 )
 
 type CustomerHandlers struct {
-	service ports.CustomerPort
+	service ports.CustomerServicePort
 }
 
-func NewCustomerHandlers(service ports.CustomerPort) CustomerHandlers{
+func NewCustomerHandlers(service ports.CustomerServicePort) CustomerHandlers{
 	return CustomerHandlers{ service }
 }
 
